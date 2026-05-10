@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solvra — Create Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0D1B4B;
+      --blue:       #1A2FCC;
+      --blue-light: #EEF0FF;
+      --green:      #22C55E;
+      --green-light:#E6F9F0;
+      --bg:         #F4F5FB;
+      --white:      #FFFFFF;
+      --border:     #E2E5F0;
+      --muted:      #8A91A8;
+      --red:        #EF4444;
+      --red-light:  #FEF2F2;
+      --amber:      #F59E0B;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--white);
+      box-shadow: 0 1px 0 var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 19px;
+      color: var(--navy);
+      text-decoration: none;
+    }
+    .sign-in-link {
+      font-size: 13.5px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .sign-in-link a {
+      color: var(--blue);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ── WRAPPER ── */
+    .page-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    /* ── STEP TRACKER ── */
+    .step-tracker {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 32px;
+    }
+    .step-tracker::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+    .step-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      z-index: 1;
+      flex: 1;
+    }
+    .step-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      transition: all 0.35s ease;
+    }
+    .step-circle.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: var(--white);
+      box-shadow: 0 0 0 4px rgba(26,47,204,0.12);
+    }
+    .step-circle.done {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--white);
+    }
+    .step-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      transition: color 0.3s;
+    }
+    .step-label.active { color: var(--blue); }
+    .step-label.done   { color: var(--green); }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── CARD ── */
+    .form-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 16px rgba(13,27,75,0.06);
+    }
+
+    .step-header { margin-bottom: 24px; }
+    .step-header h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 5px;
+    }
+    .step-header p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── FORM FIELDS ── */
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 7px;
+    }
+    .field label .req { color: var(--blue); }
+    .field label .opt { color: var(--muted); font-weight: 400; font-size: 12px; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 14.5px;
+      font-family: inherit;
+      color: var(--navy);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--muted); }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(26,47,204,0.08);
+    }
+    .field input.error,
+    .field select.error { border-color: var(--red); }
+    .field input.error:focus,
+    .field select.error:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+    }
+    .field .err-msg {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 5px;
+      display: none;
+    }
+    .field .err-msg.show { display: block; }
+
+    /* select arrow */
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 6px;
+      background: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238A91A8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center;
+      pointer-events: none;
+    }
+    .select-wrap select { padding-right: 36px; cursor: pointer; }
+
+    /* two-col grid */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* password strength */
+    .pw-strength { margin-top: 8px; }
+    .pw-bars { display: flex; gap: 4px; margin-bottom: 4px; }
+    .pw-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 99px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .pw-label { font-size: 11.5px; font-weight: 600; }
+
+    /* icon input */
+    .icon-input { position: relative; }
+    .icon-input input { padding-left: 42px; }
+    .icon-input .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    /* referral success */
+    .referral-ok {
+      font-size: 12px;
+      color: var(--green);
+      margin-top: 5px;
+      font-weight: 600;
+      display: none;
+    }
+    .referral-ok.show { display: block; }
+
+    /* info banner */
+    .info-banner {
+      background: var(--blue-light);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .info-banner p { font-size: 12.5px; color: var(--navy); line-height: 1.6; }
+
+    .warn-banner {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .warn-banner .warn-title { font-weight: 700; font-size: 13px; color: #92400E; margin-bottom: 6px; }
+    .warn-banner li { font-size: 12px; color: #78350F; margin-bottom: 3px; list-style: none; }
+    .warn-banner li::before { content: '• '; }
+
+    /* ── DOCUMENT UPLOAD ── */
+    .doc-type-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .doc-tab {
+      flex: 1;
+      padding: 10px 6px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .doc-tab.active {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .upload-box {
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      background: #FAFBFF;
+      transition: all 0.2s;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .upload-box:hover,
+    .upload-box.drag-over {
+      border-color: var(--blue);
+      background: var(--blue-light);
+    }
+    .upload-box.uploaded {
+      border-color: var(--green);
+      background: var(--green-light);
+      cursor: default;
+    }
+    .upload-box input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .upload-box.uploaded input[type="file"] { display: none; }
+    .upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .upload-title { font-weight: 700; font-size: 13.5px; color: var(--navy); margin-bottom: 4px; }
+    .upload-sub   { font-size: 12px; color: var(--muted); }
+    .upload-hint  { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* uploaded preview */
+    .upload-preview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .preview-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .preview-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .preview-info { text-align: left; flex: 1; }
+    .preview-name { font-weight: 700; font-size: 13px; color: var(--navy); margin-bottom: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+    .preview-ok   { font-size: 12px; color: var(--green); font-weight: 600; }
+    .preview-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--red);
+      font-size: 18px;
+      padding: 4px;
+      line-height: 1;
+    }
+    .upload-err { font-size: 12px; color: var(--red); margin-top: -8px; margin-bottom: 12px; display: none; }
+    .upload-err.show { display: block; }
+
+    /* ── BUTTONS ── */
+    .btn-primary-lg {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: var(--blue);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 15.5px;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 6px;
+    }
+    .btn-primary-lg:hover  { opacity: 0.88; }
+    .btn-primary-lg:active { transform: scale(0.98); }
+    .btn-primary-lg:disabled {
+      background: #C5CAE9;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 1;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      margin-bottom: 18px;
+      transition: color 0.2s;
+    }
+    .btn-back:hover { color: var(--navy); }
+
+    /* ── SUCCESS ── */
+    .success-wrap { text-align: center; padding: 10px 0 20px; }
+    .success-circle {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--green-light);
+      border: 3px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      margin: 0 auto 24px;
+      transform: scale(0.3);
+      opacity: 0;
+      transition: transform 0.55s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
+    }
+    .success-circle.pop { transform: scale(1); opacity: 1; }
+    .success-wrap h2 { font-size: 24px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+    .success-wrap p  { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+
+    .summary-box {
+      background: var(--bg);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .summary-title { font-weight: 700; font-size: 13px; color: var(--navy); margin-bottom: 12px; }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row .s-key { color: var(--muted); font-weight: 500; }
+    .summary-row .s-val { color: var(--navy); font-weight: 700; text-align: right; max-width: 60%; word-break: break-all; }
+
+    .badge-pending {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #FFF3E0;
+      color: #C05621;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+    }
+
+    /* ── STEP PANELS ── */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; animation: slideIn 0.35s ease both; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideBack {
+      from { opacity: 0; transform: translateX(-24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .step-panel.back { animation: slideBack 0.35s ease both; }
+
+    /* ── SPINNER ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="logo" href="solvra-homepage.html">
+    <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+      <rect width="36" height="36" rx="8" fill="#EEF0FF"/>
+      <path d="M18 8L28 13.5V22.5L18 28L8 22.5V13.5L18 8Z" stroke="#1A2FCC" stroke-width="2" fill="none"/>
+      <path d="M18 8L18 28M8 13.5L28 22.5M28 13.5L8 22.5" stroke="#1A2FCC" stroke-width="1.5" opacity="0.4"/>
+    </svg>
+    Solvra
+  </a>
+  <span class="sign-in-link">Have an account? <a href="#">Sign In</a></span>
+</nav>
+
+<!-- ── MAIN ── -->
+<div class="page-wrap">
+
+  <!-- Step Tracker -->
+  <div class="step-tracker" id="stepTracker">
+    <div class="step-node">
+      <div class="step-circle active" id="sc1">1</div>
+      <span class="step-label active" id="sl1">Account</span>
+    </div>
+    <div class="step-node">
+      <div class="step-circle" id="sc2">2</div>
+      <span class="step-label" id="sl2">Location</span>
+    </div>
+    <div class="step-node">
+      <div class="step-circle" id="sc3">3</div>
+      <span class="step-label" id="sl3">Financial</span>
+    </div>
+    <div class="step-node">
+      <div class="step-circle" id="sc4">4</div>
+      <span class="step-label" id="sl4">Verify</span>
+    </div>
+    <div class="step-node">
+      <div class="step-circle" id="sc5">5</div>
+      <span class="step-label" id="sl5">Done</span>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:20%"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       STEP 1 — Account Details
+  ════════════════════════════════════════ -->
+  <div class="step-panel active" id="panel1">
+    <div class="form-card">
+      <div class="step-header">
+        <h2>Create your account</h2>
+        <p>Let's start with your personal details</p>
+      </div>
+
+      <!-- Full Name -->
+      <div class="field">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" id="fullName" placeholder="John Adeyemi" autocomplete="name" />
+        <div class="err-msg" id="err-fullName">Please enter your full name (first &amp; last)</div>
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label>Email Address <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="john@example.com" autocomplete="email" />
+        <div class="err-msg" id="err-email">Enter a valid email address</div>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label>Password <span class="req">*</span></label>
+        <input type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkPwStrength()" />
+        <div class="pw-strength" id="pwStrengthWrap" style="display:none">
+          <div class="pw-bars">
+            <div class="pw-bar" id="pb1"></div>
+            <div class="pw-bar" id="pb2"></div>
+            <div class="pw-bar" id="pb3"></div>
+            <div class="pw-bar" id="pb4"></div>
+          </div>
+          <span class="pw-label" id="pwLabel"></span>
+        </div>
+        <div class="err-msg" id="err-password">Password must be at least 8 characters</div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="field">
+        <label>Confirm Password <span class="req">*</span></label>
+        <input type="password" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password" />
+        <div class="err-msg" id="err-confirmPassword">Passwords do not match</div>
+      </div>
+
+      <button class="btn-primary-lg" onclick="goStep(1,2)">
+        Continue <span>→</span>
+      </button>
+
+      <p style="text-align:center;font-size:13.5px;color:var(--muted);margin-top:18px;">
+        Already have an account?
+        <a href="#" style="color:var(--blue);font-weight:700;text-decoration:none;">Sign In</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       STEP 2 — Location & Date of Birth
+  ════════════════════════════════════════ -->
+  <div class="step-panel" id="panel2">
+    <div class="form-card">
+      <button class="btn-back" onclick="goStep(2,1,true)">← Back</button>
+      <div class="step-header">
+        <h2>Where are you located?</h2>
+        <p>We need this for compliance and security purposes</p>
+      </div>
+
+      <!-- Country -->
+      <div class="field">
+        <label>Country of Residence <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select id="country">
+            <option value="">Select your country</option>
+            <option>Afghanistan</option><option>Albania</option><option>Algeria</option>
+            <option>Angola</option><option>Argentina</option><option>Armenia</option>
+            <option>Australia</option><option>Austria</option><option>Azerbaijan</option>
+            <option>Bahamas</option><option>Bahrain</option><option>Bangladesh</option>
+            <option>Belarus</option><option>Belgium</option><option>Belize</option>
+            <option>Benin</option><option>Bolivia</option><option>Bosnia</option>
+            <option>Botswana</option><option>Brazil</option><option>Bulgaria</option>
+            <option>Cambodia</option><option>Cameroon</option><option>Canada</option>
+            <option>Chile</option><option>China</option><option>Colombia</option>
+            <option>Congo</option><option>Costa Rica</option><option>Croatia</option>
+            <option>Cuba</option><option>Cyprus</option><option>Czech Republic</option>
+            <option>Denmark</option><option>Dominican Republic</option><option>Ecuador</option>
+            <option>Egypt</option><option>El Salvador</option><option>Estonia</option>
+            <option>Ethiopia</option><option>Finland</option><option>France</option>
+            <option>Gabon</option><option>Georgia</option><option>Germany</option>
+            <option>Ghana</option><option>Greece</option><option>Guatemala</option>
+            <option>Honduras</option><option>Hungary</option><option>Iceland</option>
+            <option>India</option><option>Indonesia</option><option>Iran</option>
+            <option>Iraq</option><option>Ireland</option><option>Israel</option>
+            <option>Italy</option><option>Jamaica</option><option>Japan</option>
+            <option>Jordan</option><option>Kazakhstan</option><option>Kenya</option>
+            <option>Kuwait</option><option>Latvia</option><option>Lebanon</option>
+            <option>Libya</option><option>Lithuania</option><option>Luxembourg</option>
+            <option>Malaysia</option><option>Mali</option><option>Malta</option>
+            <option>Mexico</option><option>Moldova</option><option>Mongolia</option>
+            <option>Morocco</option><option>Mozambique</option><option>Myanmar</option>
+            <option>Namibia</option><option>Nepal</option><option>Netherlands</option>
+            <option>New Zealand</option><option>Nicaragua</option><option>Nigeria</option>
+            <option>Norway</option><option>Oman</option><option>Pakistan</option>
+            <option>Panama</option><option>Paraguay</option><option>Peru</option>
+            <option>Philippines</option><option>Poland</option><option>Portugal</option>
+            <option>Qatar</option><option>Romania</option><option>Russia</option>
+            <option>Rwanda</option><option>Saudi Arabia</option><option>Senegal</option>
+            <option>Serbia</option><option>Sierra Leone</option><option>Singapore</option>
+            <option>Slovakia</option><option>Slovenia</option><option>Somalia</option>
+            <option>South Africa</option><option>South Korea</option><option>Spain</option>
+            <option>Sri Lanka</option><option>Sudan</option><option>Sweden</option>
+            <option>Switzerland</option><option>Syria</option><option>Taiwan</option>
+            <option>Tanzania</option><option>Thailand</option><option>Tunisia</option>
+            <option>Turkey</option><option>Uganda</option><option>Ukraine</option>
+            <option>United Arab Emirates</option><option>United Kingdom</option>
+            <option>United States</option><option>Uruguay</option><option>Uzbekistan</option>
+            <option>Venezuela</option><option>Vietnam</option><option>Yemen</option>
+            <option>Zambia</option><option>Zimbabwe</option>
+          </select>
+        </div>
+        <div class="err-msg" id="err-country">Please select your country</div>
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="field">
+        <label>Date of Birth <span class="req">*</span></label>
+        <input type="date" id="dob" />
+        <div class="err-msg" id="err-dob">You must be at least 18 years old</div>
+      </div>
+
+      <!-- Home Address -->
+      <div class="field">
+        <label>Home Address <span class="req">*</span></label>
+        <input type="text" id="homeAddress" placeholder="123 Main Street, Apt 4B" autocomplete="street-address" />
+        <div class="err-msg" id="err-homeAddress">Please enter your home address</div>
+      </div>
+
+      <!-- City & Postal -->
+      <div class="two-col">
+        <div class="field">
+          <label>City <span class="req">*</span></label>
+          <input type="text" id="city" placeholder="Lagos" autocomplete="address-level2" />
+          <div class="err-msg" id="err-city">City is required</div>
+        </div>
+        <div class="field">
+          <label>Postal / ZIP <span class="req">*</span></label>
+          <input type="text" id="postalCode" placeholder="100001" autocomplete="postal-code" />
+          <div class="err-msg" id="err-postalCode">Postal code required</div>
+        </div>
+      </div>
+
+      <button class="btn-primary-lg" onclick="goStep(2,3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       STEP 3 — Financial Info
+  ════════════════════════════════════════ -->
+  <div class="step-panel" id="panel3">
+    <div class="form-card">
+      <button class="btn-back" onclick="goStep(3,2,true)">← Back</button>
+      <div class="step-header">
+        <h2>Financial details</h2>
+        <p>Required for regulatory compliance (AML / KYC)</p>
+      </div>
+
+      <!-- Source of Funds -->
+      <div class="field">
+        <label>Source of Funds <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select id="sourceOfFund">
+            <option value="">Select primary income source</option>
+            <option>Employment / Salary</option>
+            <option>Business Income</option>
+            <option>Investment Returns</option>
+            <option>Savings</option>
+            <option>Inheritance / Gift</option>
+            <option>Pension / Retirement</option>
+            <option>Freelance / Contract Work</option>
+            <option>Rental Income</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="err-msg" id="err-sourceOfFund">Please select a source of funds</div>
+      </div>
+
+      <!-- Referral Code -->
+      <div class="field">
+        <label>Referral Code <span class="opt">(optional)</span></label>
+        <div class="icon-input">
+          <span class="input-icon">🏷️</span>
+          <input type="text" id="referralCode" placeholder="e.g. SOLV-ABCD1234"
+            maxlength="16" oninput="this.value=this.value.toUpperCase();checkReferral()" />
+        </div>
+        <div class="referral-ok" id="referralOk">✓ Referral code applied — you'll both get a reward!</div>
+      </div>
+
+      <!-- Info banner -->
+      <div class="info-banner">
+        <span style="font-size:18px;flex-shrink:0;">ℹ️</span>
+        <p>This information is collected to comply with anti-money laundering (AML) regulations.
+           Your data is encrypted and never shared without your consent.</p>
+      </div>
+
+      <button class="btn-primary-lg" onclick="goStep(3,4)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       STEP 4 — Document Upload
+  ════════════════════════════════════════ -->
+  <div class="step-panel" id="panel4">
+    <div class="form-card">
+      <button class="btn-back" onclick="goStep(4,3,true)">← Back</button>
+      <div class="step-header">
+        <h2>Verify your identity</h2>
+        <p>Upload a government-issued ID to complete KYC</p>
+      </div>
+
+      <!-- Doc type tabs -->
+      <label style="font-size:13px;font-weight:600;color:var(--navy);display:block;margin-bottom:10px;">
+        Document Type <span style="color:var(--blue)">*</span>
+      </label>
+      <div class="doc-type-tabs">
+        <button class="doc-tab active" onclick="switchDocType('passport',this)">Passport</button>
+        <button class="doc-tab" onclick="switchDocType('national_id',this)">National ID</button>
+        <button class="doc-tab" onclick="switchDocType('drivers',this)">Driver's License</button>
+      </div>
+
+      <!-- Front -->
+      <label style="font-size:13px;font-weight:600;color:var(--navy);display:block;margin-bottom:8px;" id="frontLabel">
+        Passport Photo Page <span style="color:var(--blue)">*</span>
+      </label>
+      <div class="upload-box" id="uploadFront"
+        ondragover="dragOver(event,'uploadFront')"
+        ondragleave="dragLeave('uploadFront')"
+        ondrop="dropFile(event,'uploadFront','prevFront','prevFrontThumb','prevFrontName')">
+        <input type="file" id="fileFront" accept="image/*,.pdf"
+          onchange="handleFile(this,'uploadFront','prevFront','prevFrontThumb','prevFrontName')" />
+        <div class="upload-icon">🪪</div>
+        <div class="upload-title" id="frontBoxTitle">Upload passport photo page</div>
+        <div class="upload-sub">Tap to browse or drag &amp; drop</div>
+        <div class="upload-hint">JPG, PNG or PDF · Max 10 MB</div>
+      </div>
+      <div class="upload-box uploaded" id="prevFront" style="display:none;">
+        <div class="upload-preview">
+          <div class="preview-thumb" id="prevFrontThumb">📄</div>
+          <div class="preview-info">
+            <div class="preview-name" id="prevFrontName"></div>
+            <div class="preview-ok">✓ Uploaded successfully</div>
+          </div>
+          <button class="preview-remove" onclick="removeFile('uploadFront','prevFront','fileFront')">✕</button>
+        </div>
+      </div>
+      <div class="upload-err" id="err-front">Please upload the front of your document</div>
+
+      <!-- Back (hidden for passport) -->
+      <div id="backSection" style="display:none;">
+        <label style="font-size:13px;font-weight:600;color:var(--navy);display:block;margin-bottom:8px;" id="backLabel">
+          Back of Document <span style="color:var(--blue)">*</span>
+        </label>
+        <div class="upload-box" id="uploadBack"
+          ondragover="dragOver(event,'uploadBack')"
+          ondragleave="dragLeave('uploadBack')"
+          ondrop="dropFile(event,'uploadBack','prevBack','prevBackThumb','prevBackName')">
+          <input type="file" id="fileBack" accept="image/*,.pdf"
+            onchange="handleFile(this,'uploadBack','prevBack','prevBackThumb','prevBackName')" />
+          <div class="upload-icon">📋</div>
+          <div class="upload-title">Upload back side of ID</div>
+          <div class="upload-sub">Tap to browse or drag &amp; drop</div>
+          <div class="upload-hint">JPG, PNG or PDF · Max 10 MB</div>
+        </div>
+        <div class="upload-box uploaded" id="prevBack" style="display:none;">
+          <div class="upload-preview">
+            <div class="preview-thumb" id="prevBackThumb">📄</div>
+            <div class="preview-info">
+              <div class="preview-name" id="prevBackName"></div>
+              <div class="preview-ok">✓ Uploaded successfully</div>
+            </div>
+            <button class="preview-remove" onclick="removeFile('uploadBack','prevBack','fileBack')">✕</button>
+          </div>
+        </div>
+        <div class="upload-err" id="err-back">Please upload the back of your document</div>
+      </div>
+
+      <!-- Selfie -->
+      <label style="font-size:13px;font-weight:600;color:var(--navy);display:block;margin-bottom:8px;margin-top:4px;">
+        Selfie Holding Document <span style="color:var(--blue)">*</span>
+      </label>
+      <div class="upload-box" id="uploadSelfie"
+        ondragover="dragOver(event,'uploadSelfie')"
+        ondragleave="dragLeave('uploadSelfie')"
+        ondrop="dropFile(event,'uploadSelfie','prevSelfie','prevSelfieThumb','prevSelfieName')">
+        <input type="file" id="fileSelfie" accept="image/*"
+          onchange="handleFile(this,'uploadSelfie','prevSelfie','prevSelfieThumb','prevSelfieName')" />
+        <div class="upload-icon">🤳</div>
+        <div class="upload-title">Upload selfie with document</div>
+        <div class="upload-sub">Hold your ID clearly next to your face</div>
+        <div class="upload-hint">JPG or PNG · Max 10 MB</div>
+      </div>
+      <div class="upload-box uploaded" id="prevSelfie" style="display:none;">
+        <div class="upload-preview">
+          <div class="preview-thumb" id="prevSelfieThumb">🤳</div>
+          <div class="preview-info">
+            <div class="preview-name" id="prevSelfieName"></div>
+            <div class="preview-ok">✓ Uploaded successfully</div>
+          </div>
+          <button class="preview-remove" onclick="removeFile('uploadSelfie','prevSelfie','fileSelfie')">✕</button>
+        </div>
+      </div>
+      <div class="upload-err" id="err-selfie">Please upload a selfie holding your document</div>
+
+      <!-- Tips -->
+      <div class="warn-banner" style="margin-top:16px;">
+        <div class="warn-title">📸 Photo tips for best results</div>
+        <ul>
+          <li>Ensure the full document is visible with no cut-off edges</li>
+          <li>Good lighting — avoid glare, shadows, or flash reflections</li>
+          <li>All text, photo, and expiry date must be clearly readable</li>
+          <li>Do not cover any part of the document with your fingers</li>
+        </ul>
+      </div>
+
+      <button class="btn-primary-lg" id="submitBtn" onclick="submitForm()">
+        <span id="submitText">Submit &amp; Verify →</span>
+        <div class="spinner" id="submitSpinner"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       STEP 5 — Success
+  ════════════════════════════════════════ -->
+  <div class="step-panel" id="panel5">
+    <div class="form-card">
+      <div class="success-wrap">
+        <div class="success-circle" id="successCircle">✓</div>
+
+        <div class="badge-pending">⏳ Verification in progress</div>
+
+        <h2 id="successName">You're all set! 🎉</h2>
+        <p>Your account has been created successfully.<br>
+           We're reviewing your documents — this usually takes just a few minutes.</p>
+
+        <!-- Summary -->
+        <div class="summary-box">
+          <div class="summary-title">Account Summary</div>
+          <div class="summary-row">
+            <span class="s-key">Full Name</span>
+            <span class="s-val" id="sumName">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="s-key">Email</span>
+            <span class="s-val" id="sumEmail">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="s-key">Country</span>
+            <span class="s-val" id="sumCountry">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="s-key">Date of Birth</span>
+            <span class="s-val" id="sumDob">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="s-key">Source of Funds</span>
+            <span class="s-val" id="sumFund">—</span>
+          </div>
+          <div class="summary-row" id="sumRefRow" style="display:none;">
+            <span class="s-key">Referral Code</span>
+            <span class="s-val" id="sumRef">—</span>
+          </div>
+          <div class="summary-row">
+            <span class="s-key">ID Verification</span>
+            <span class="s-val" style="color:var(--amber);">⏳ Under Review</span>
+          </div>
+        </div>
+
+        <button class="btn-primary-lg" onclick="window.location.href='solvra-homepage.html'">
+          Go to Dashboard →
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+  /* ══════════════════════════════════════════════════
+     STATE
+  ══════════════════════════════════════════════════ */
+  let currentStep = 1;
+  let docType = 'passport';
+  const TOTAL_STEPS = 5;
+
+  // Set max DOB date (must be 18+)
+  (function () {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 18);
+    document.getElementById('dob').max = d.toISOString().split('T')[0];
+  })();
+
+  /* ══════════════════════════════════════════════════
+     STEP NAVIGATION
+  ══════════════════════════════════════════════════ */
+  function goStep(from, to, isBack) {
+    if (!isBack && !validateStep(from)) return;
+
+    const panels = document.querySelectorAll('.step-panel');
+    panels.forEach(p => { p.classList.remove('active','back'); });
+
+    const next = document.getElementById('panel' + to);
+    if (isBack) next.classList.add('back');
+    next.classList.add('active');
+
+    currentStep = to;
+    updateTracker();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Pop the success circle
+    if (to === 5) {
+      populateSummary();
+      setTimeout(() => document.getElementById('successCircle').classList.add('pop'), 100);
+    }
+  }
+
+  function updateTracker() {
+    for (let i = 1; i <= TOTAL_STEPS; i++) {
+      const circle = document.getElementById('sc' + i);
+      const label  = document.getElementById('sl' + i);
+      circle.classList.remove('active','done');
+      label.classList.remove('active','done');
+
+      if (i < currentStep) {
+        circle.classList.add('done');
+        circle.textContent = '✓';
+        label.classList.add('done');
+      } else if (i === currentStep) {
+        circle.classList.add('active');
+        circle.textContent = i;
+        label.classList.add('active');
+      } else {
+        circle.textContent = i;
+      }
+    }
+    const pct = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  /* ══════════════════════════════════════════════════
+     VALIDATION
+  ══════════════════════════════════════════════════ */
+  function showErr(id, show) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('show', show);
+    const input = document.getElementById(id.replace('err-',''));
+    if (input) input.classList.toggle('error', show);
+  }
+
+  function validateStep(step) {
+    let ok = true;
+
+    if (step === 1) {
+      const name  = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const pw    = document.getElementById('password').value;
+      const cpw   = document.getElementById('confirmPassword').value;
+
+      const nameOk = name.split(' ').filter(Boolean).length >= 2;
+      showErr('err-fullName', !nameOk);
+      if (!nameOk) ok = false;
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      showErr('err-email', !emailOk);
+      if (!emailOk) ok = false;
+
+      const pwOk = pw.length >= 8;
+      showErr('err-password', !pwOk);
+      if (!pwOk) ok = false;
+
+      const cpwOk = pw === cpw;
+      showErr('err-confirmPassword', !cpwOk);
+      if (!cpwOk) ok = false;
+    }
+
+    if (step === 2) {
+      const country  = document.getElementById('country').value;
+      const dob      = document.getElementById('dob').value;
+      const address  = document.getElementById('homeAddress').value.trim();
+      const city     = document.getElementById('city').value.trim();
+      const postal   = document.getElementById('postalCode').value.trim();
+
+      showErr('err-country', !country);
+      if (!country) ok = false;
+
+      let dobOk = false;
+      if (dob) {
+        const age = (new Date() - new Date(dob)) / (365.25*24*60*60*1000);
+        dobOk = age >= 18;
+      }
+      showErr('err-dob', !dobOk);
+      if (!dobOk) ok = false;
+
+      showErr('err-homeAddress', !address);
+      if (!address) ok = false;
+
+      showErr('err-city', !city);
+      if (!city) ok = false;
+
+      showErr('err-postal', !postal);
+      if (!postal) ok = false;
+    }
+
+    if (step === 3) {
+      const fund = document.getElementById('sourceOfFund').value;
+      showErr('err-sourceOfFund', !fund);
+      if (!fund) ok = false;
+    }
+
+    if (step === 4) {
+      const hasFront  = document.getElementById('prevFront').style.display  !== 'none';
+      const hasBack   = document.getElementById('prevBack').style.display   !== 'none';
+      const hasSelfie = document.getElementById('prevSelfie').style.display !== 'none';
+
+      document.getElementById('err-front').classList.toggle('show', !hasFront);
+      if (!hasFront) ok = false;
+
+      if (docType !== 'passport') {
+        document.getElementById('err-back').classList.toggle('show', !hasBack);
+        if (!hasBack) ok = false;
+      }
+
+      document.getElementById('err-selfie').classList.toggle('show', !hasSelfie);
+      if (!hasSelfie) ok = false;
+    }
+
+    return ok;
+  }
+
+  /* ══════════════════════════════════════════════════
+     PASSWORD STRENGTH
+  ══════════════════════════════════════════════════ */
+  function checkPwStrength() {
+    const pw = document.getElementById('password').value;
+    const wrap = document.getElementById('pwStrengthWrap');
+    if (!pw) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    let score = 0;
+    if (pw.length >= 8)          score++;
+    if (/[A-Z]/.test(pw))        score++;
+    if (/[0-9]/.test(pw))        score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+    const colors = ['','#EF4444','#F59E0B','#3B82F6','#22C55E'];
+    const labels = ['','Weak','Fair','Good','Strong'];
+
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('pb' + i).style.background = i <= score ? colors[score] : 'var(--border)';
+    }
+    const lbl = document.getElementById('pwLabel');
+    lbl.textContent = labels[score];
+    lbl.style.color = colors[score];
+  }
+
+  /* ══════════════════════════════════════════════════
+     REFERRAL CODE
+  ══════════════════════════════════════════════════ */
+  function checkReferral() {
+    const val = document.getElementById('referralCode').value;
+    document.getElementById('referralOk').classList.toggle('show', val.length >= 6);
+  }
+
+  /* ══════════════════════════════════════════════════
+     DOCUMENT TYPE SWITCH
+  ══════════════════════════════════════════════════ */
+  function switchDocType(type, btn) {
+    docType = type;
+    document.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+
+    const backSection = document.getElementById('backSection');
+    const frontLabel  = document.getElementById('frontLabel');
+    const frontTitle  = document.getElementById('frontBoxTitle');
+
+    if (type === 'passport') {
+      backSection.style.display = 'none';
+      frontLabel.innerHTML = 'Passport Photo Page <span style="color:var(--blue)">*</span>';
+      frontTitle.textContent = 'Upload passport photo page';
+    } else if (type === 'national_id') {
+      backSection.style.display = 'block';
+      frontLabel.innerHTML = 'Front of National ID <span style="color:var(--blue)">*</span>';
+      frontTitle.textContent = 'Upload front side of ID';
+    } else {
+      backSection.style.display = 'block';
+      frontLabel.innerHTML = "Front of Driver's License <span style=\"color:var(--blue)\">*</span>";
+      frontTitle.textContent = "Upload front of driver's license";
+    }
+
+    // Reset uploads on switch
+    removeFile('uploadFront','prevFront','fileFront');
+    removeFile('uploadBack','prevBack','fileBack');
+  }
+
+  /* ══════════════════════════════════════════════════
+     FILE UPLOAD HELPERS
+  ══════════════════════════════════════════════════ */
+  function handleFile(input, boxId, prevId, thumbId, nameId) {
+    const file = input.files[0];
+    if (!file) return;
+    renderFile(file, boxId, prevId, thumbId, nameId);
+  }
+
+  function renderFile(file, boxId, prevId, thumbId, nameId) {
+    const box  = document.getElementById(boxId);
+    const prev = document.getElementById(prevId);
+    const name = document.getElementById(nameId);
+    const thumb = document.getElementById(thumbId);
+
+    name.textContent = file.name;
+
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        thumb.innerHTML = '<img src="' + e.target.result + '" alt="preview" />';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      thumb.innerHTML = '📄';
+    }
+
+    box.style.display  = 'none';
+    prev.style.display = 'block';
+  }
+
+  function removeFile(boxId, prevId, inputId) {
+    const box  = document.getElementById(boxId);
+    const prev = document.getElementById(prevId);
+    const inp  = document.getElementById(inputId);
+    if (box)  box.style.display  = 'block';
+    if (prev) prev.style.display = 'none';
+    if (inp)  inp.value = '';
+  }
+
+  function dragOver(e, boxId) {
+    e.preventDefault();
+    document.getElementById(boxId).classList.add('drag-over');
+  }
+
+  function dragLeave(boxId) {
+    document.getElementById(boxId).classList.remove('drag-over');
+  }
+
+  function dropFile(e, boxId, prevId, thumbId, nameId) {
+    e.preventDefault();
+    dragLeave(boxId);
+    const file = e.dataTransfer.files[0];
+    if (file) renderFile(file, boxId, prevId, thumbId, nameId);
+  }
+
+  /* ══════════════════════════════════════════════════
+     SUBMIT WITH LOADING STATE
+  ══════════════════════════════════════════════════ */
+  function submitForm() {
+    if (!validateStep(4)) return;
+
+    const btn     = document.getElementById('submitBtn');
+    const txt     = document.getElementById('submitText');
+    const spinner = document.getElementById('submitSpinner');
+
+    btn.disabled        = true;
+    txt.style.display   = 'none';
+    spinner.style.display = 'block';
+
+    // Simulate async submission
+    setTimeout(() => {
+      btn.disabled        = false;
+      txt.style.display   = 'inline';
+      spinner.style.display = 'none';
+      goStep(4, 5);
+    }, 2000);
+  }
+
+  /* ══════════════════════════════════════════════════
+     SUMMARY
+  ══════════════════════════════════════════════════ */
+  function populateSummary() {
+    const name   = document.getElementById('fullName').value.trim();
+    const email  = document.getElementById('email').value.trim();
+    const country= document.getElementById('country').value;
+    const dob    = document.getElementById('dob').value;
+    const fund   = document.getElementById('sourceOfFund').value;
+    const ref    = document.getElementById('referralCode').value;
+
+    const firstName = name.split(' ')[0];
+    document.getElementById('successName').textContent = "You're all set, " + firstName + "! 🎉";
+    document.getElementById('sumName').textContent    = name;
+    document.getElementById('sumEmail').textContent   = email;
+    document.getElementById('sumCountry').textContent = country;
+    document.getElementById('sumDob').textContent     = dob
+      ? new Date(dob + 'T00:00:00').toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})
+      : '—';
+    document.getElementById('sumFund').textContent    = fund;
+
+    if (ref) {
+      document.getElementById('sumRef').textContent    = ref;
+      document.getElementById('sumRefRow').style.display = 'flex';
+    }
+  }
+</script>
+
+</body>
+</html>
