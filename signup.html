@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<head> 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solvra — Create Account</title>
@@ -915,7 +916,16 @@
     </div>
   </div>
 
-</div><script>
+</div>
+
+<script>
+  /* ══════════════════════════════════════════════════
+     SUPABASE CONNECTION
+  ══════════════════════════════════════════════════ */
+  const supabaseUrl = 'https://catyifsdiesojvcpsldm.supabase.co';
+  const supabaseKey = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhdHlpZnNkaWVzb2p2Y3BzbGRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MjIzMzAsImV4cCI6MjA5NDA5ODMzMH0.lUy5J5clkjCrh_uUO8faQSyqWcHNM2CGofZRVNdvLnA';
+  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
   /* ══════════════════════════════════════════════════
      STATE
   ══════════════════════════════════════════════════ */
@@ -923,11 +933,11 @@
   let docType = 'passport';
   const TOTAL_STEPS = 5;
 
-  // Set max DOB date (must be 18+)
   (function () {
     const d = new Date();
     d.setFullYear(d.getFullYear() - 18);
-    document.getElementById('dob').max = d.toISOString().split('T')[0];
+    const dobInput = document.getElementById('dob');
+    if (dobInput) dobInput.max = d.toISOString().split('T')[0];
   })();
 
   /* ══════════════════════════════════════════════════
@@ -947,7 +957,6 @@
     updateTracker();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Pop the success circle
     if (to === 5) {
       populateSummary();
       setTimeout(() => document.getElementById('successCircle').classList.add('pop'), 100);
@@ -984,7 +993,8 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.toggle('show', show);
-    const input = document.getElementById(id.replace('err-',''));
+    const inputId = id.replace('err-', '');
+    const input = document.getElementById(inputId);
     if (input) input.classList.toggle('error', show);
   }
 
@@ -1038,7 +1048,7 @@
       showErr('err-city', !city);
       if (!city) ok = false;
 
-      showErr('err-postal', !postal);
+      showErr('err-postalCode', !postal);
       if (!postal) ok = false;
     }
 
@@ -1069,7 +1079,55 @@
   }
 
   /* ══════════════════════════════════════════════════
-     PASSWORD STRENGTH
+     ACTUAL SUBMIT TO SUPABASE
+  ══════════════════════════════════════════════════ */
+  async function submitForm() {
+    if (!validateStep(4)) return;
+
+    const btn     = document.getElementById('submitBtn');
+    const txt     = document.getElementById('submitText');
+    const spinner = document.getElementById('submitSpinner');
+
+    btn.disabled = true;
+    txt.style.display = 'none';
+    spinner.style.display = 'block';
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const fullName = document.getElementById('fullName').value;
+    const country = document.getElementById('country').value;
+    const dob = document.getElementById('dob').value;
+    const sourceOfFund = document.getElementById('sourceOfFund').value;
+
+    try {
+      const { data, error } = await _supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: fullName,
+            country: country,
+            date_of_birth: dob,
+            source_of_funds: sourceOfFund
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      // If no error, proceed to success screen
+      goStep(4, 5);
+
+    } catch (err) {
+      alert("Registration Error: " + err.message);
+      btn.disabled = false;
+      txt.style.display = 'inline';
+      spinner.style.display = 'none';
+    }
+  }
+
+  /* ══════════════════════════════════════════════════
+     HELPERS (PW, REF, DOCS, FILES)
   ══════════════════════════════════════════════════ */
   function checkPwStrength() {
     const pw = document.getElementById('password').value;
@@ -1078,9 +1136,9 @@
     wrap.style.display = 'block';
 
     let score = 0;
-    if (pw.length >= 8)          score++;
-    if (/[A-Z]/.test(pw))        score++;
-    if (/[0-9]/.test(pw))        score++;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
     if (/[^A-Za-z0-9]/.test(pw)) score++;
 
     const colors = ['','#EF4444','#F59E0B','#3B82F6','#22C55E'];
@@ -1094,17 +1152,11 @@
     lbl.style.color = colors[score];
   }
 
-  /* ══════════════════════════════════════════════════
-     REFERRAL CODE
-  ══════════════════════════════════════════════════ */
   function checkReferral() {
     const val = document.getElementById('referralCode').value;
     document.getElementById('referralOk').classList.toggle('show', val.length >= 6);
   }
 
-  /* ══════════════════════════════════════════════════
-     DOCUMENT TYPE SWITCH
-  ══════════════════════════════════════════════════ */
   function switchDocType(type, btn) {
     docType = type;
     document.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
@@ -1128,18 +1180,13 @@
       frontTitle.textContent = "Upload front of driver's license";
     }
 
-    // Reset uploads on switch
     removeFile('uploadFront','prevFront','fileFront');
     removeFile('uploadBack','prevBack','fileBack');
   }
 
-  /* ══════════════════════════════════════════════════
-     FILE UPLOAD HELPERS
-  ══════════════════════════════════════════════════ */
   function handleFile(input, boxId, prevId, thumbId, nameId) {
     const file = input.files[0];
-    if (!file) return;
-    renderFile(file, boxId, prevId, thumbId, nameId);
+    if (file) renderFile(file, boxId, prevId, thumbId, nameId);
   }
 
   function renderFile(file, boxId, prevId, thumbId, nameId) {
@@ -1189,58 +1236,6 @@
     if (file) renderFile(file, boxId, prevId, thumbId, nameId);
   }
 
-  /* ══════════════════════════════════════════════════
-     ACTUAL SUBMIT TO SUPABASE
-  ══════════════════════════════════════════════════ */
-  async function submitForm() {
-    if (!validateStep(4)) return;
-
-    const btn     = document.getElementById('submitBtn');
-    const txt     = document.getElementById('submitText');
-    const spinner = document.getElementById('submitSpinner');
-
-    // 1. Show loading state
-    btn.disabled = true;
-    txt.style.display = 'none';
-    spinner.style.display = 'block';
-
-    // 2. Collect all the data from your inputs
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const fullName = document.getElementById('fullName').value;
-    const country = document.getElementById('country').value;
-    const dob = document.getElementById('dob').value;
-    const sourceOfFund = document.getElementById('sourceOfFund').value;
-
-    // 3. Send the data to Supabase
-    // This creates the user account and stores their info in their profile
-    const { data, error } = await _supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          full_name: fullName,
-          country: country,
-          date_of_birth: dob,
-          source_of_funds: sourceOfFund
-        }
-      }
-    });
-
-    if (error) {
-      alert("Error: " + error.message);
-      btn.disabled = false;
-      txt.style.display = 'inline';
-      spinner.style.display = 'none';
-    } else {
-      // Success! Move to the final screen
-      goStep(4, 5);
-    }
-  }
-
-  /* ══════════════════════════════════════════════════
-     SUMMARY
-  ══════════════════════════════════════════════════ */
   function populateSummary() {
     const name   = document.getElementById('fullName').value.trim();
     const email  = document.getElementById('email').value.trim();
@@ -1264,16 +1259,7 @@
       document.getElementById('sumRefRow').style.display = 'flex';
     }
   }
-</script>  
-  <script>
-  // This connects your website to your specific database
-  const supabaseUrl = 'https://catyifsdiesojvcpsldm.supabase.co'
-  const supabaseKey = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhdHlpZnNkaWVzb2p2Y3BzbGRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MjIzMzAsImV4cCI6MjA5NDA5ODMzMH0.lUy5J5clkjCrh_uUO8faQSyqWcHNM2CGofZRVNdvLnA'
-  const _supabase = supabase.createClient(supabaseUrl, supabaseKey)
+</script>
 
-  console.log("Connection successful!");
-  </script>
-  
-  
 </body>
 </html>
