@@ -1190,26 +1190,52 @@
   }
 
   /* ══════════════════════════════════════════════════
-     SUBMIT WITH LOADING STATE
+     ACTUAL SUBMIT TO SUPABASE
   ══════════════════════════════════════════════════ */
-  function submitForm() {
+  async function submitForm() {
     if (!validateStep(4)) return;
 
     const btn     = document.getElementById('submitBtn');
     const txt     = document.getElementById('submitText');
     const spinner = document.getElementById('submitSpinner');
 
-    btn.disabled        = true;
-    txt.style.display   = 'none';
+    // 1. Show loading state
+    btn.disabled = true;
+    txt.style.display = 'none';
     spinner.style.display = 'block';
 
-    // Simulate async submission
-    setTimeout(() => {
-      btn.disabled        = false;
-      txt.style.display   = 'inline';
+    // 2. Collect all the data from your inputs
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const fullName = document.getElementById('fullName').value;
+    const country = document.getElementById('country').value;
+    const dob = document.getElementById('dob').value;
+    const sourceOfFund = document.getElementById('sourceOfFund').value;
+
+    // 3. Send the data to Supabase
+    // This creates the user account and stores their info in their profile
+    const { data, error } = await _supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          full_name: fullName,
+          country: country,
+          date_of_birth: dob,
+          source_of_funds: sourceOfFund
+        }
+      }
+    });
+
+    if (error) {
+      alert("Error: " + error.message);
+      btn.disabled = false;
+      txt.style.display = 'inline';
       spinner.style.display = 'none';
+    } else {
+      // Success! Move to the final screen
       goStep(4, 5);
-    }, 2000);
+    }
   }
 
   /* ══════════════════════════════════════════════════
@@ -1250,4 +1276,4 @@
   
   
 </body>
-</html>"
+</html>
