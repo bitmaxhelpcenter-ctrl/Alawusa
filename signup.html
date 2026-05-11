@@ -1277,59 +1277,6 @@
     }
   }
 </script>  
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<script>
-  // YOUR CONFIGURATION (The key you saved earlier)
-  const firebaseConfig = {
-    apiKey: "AIzaSyD2Da0iuiIq7aMQ2Sxc7swTs5zay6J1zFM",
-    authDomain: "sollvra.firebaseapp.com",
-    projectId: "sollvra",
-    storageBucket: "sollvra.firebasestorage.app",
-    messagingSenderId: "193044122340",
-    appId: "1:193044122340:web:963f0b8d456c6cd0fdbaf1",
-    measurementId: "G-9J9XW2STML"
-  };
-
-  // Initialize
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
-
-  // Sign-Up Logic
-  async function handleSignUp(event) {
-    event.preventDefault(); 
-
-    const name = document.getElementById('fullName').value; 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    try {
-      // 1. Create the user
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      const user = userCredential.user;
-
-      // 2. Save them to the ledger (the screen you just saw)
-      await db.ref('users/' + user.uid).set({
-        full_name: name,
-        balance: 0.00,
-        email: email
-      });
-
-      alert("Registration Successful!");
-      window.location.href = "dashboard.html"; // Send them to dashboard
-    } catch (error) {
-      alert("Error: " + error.message);
-    }
-  }
-
-  // Connect the form to this code
-  document.getElementById('signupForm').addEventListener('submit', handleSignUp);
-</script>
-
   
-
 </body>
 </html>
