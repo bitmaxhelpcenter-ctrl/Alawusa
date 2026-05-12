@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solvra — Sign In</title>
@@ -471,7 +472,6 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a class="logo" href="solvra-homepage.html">
     <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
@@ -484,12 +484,10 @@
   <span class="nav-right">No account? <a href="solvra-signup.html">Sign up free</a></span>
 </nav>
 
-<!-- MAIN -->
 <div class="page">
   <div class="card-wrap">
     <div class="card">
 
-      <!-- Header -->
       <div class="card-header">
         <a class="header-logo" href="solvra-homepage.html">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -503,13 +501,11 @@
         <p>Sign in to manage your money</p>
       </div>
 
-      <!-- Alert -->
       <div class="alert" id="alert">
         <span id="alertIcon" style="font-size:17px;flex-shrink:0;"></span>
         <span id="alertMsg"></span>
       </div>
 
-      <!-- Email -->
       <div class="field">
         <div class="field-top">
           <label for="email">Email Address</label>
@@ -528,7 +524,6 @@
         <div class="err-msg" id="err-email">Please enter a valid email address</div>
       </div>
 
-      <!-- Password -->
       <div class="field">
         <div class="field-top">
           <label for="password">Password</label>
@@ -555,35 +550,29 @@
         <div class="err-msg" id="err-password">Password is required</div>
       </div>
 
-      <!-- Remember me -->
       <div class="remember-row" onclick="toggleRemember()">
         <div class="check-box" id="chk"></div>
         <span>Keep me signed in for 30 days</span>
       </div>
 
-      <!-- Sign In Button -->
       <button class="btn-signin" id="signinBtn" onclick="signIn()">
         <span id="btnTxt">Sign In</span>
         <div class="spinner" id="spinner"></div>
       </button>
 
-      <!-- Signup prompt -->
       <p class="signup-line">
         Don't have an account? <a href="solvra-signup.html">Create one free →</a>
       </p>
 
-      <!-- Trust strip -->
       <div class="trust">
         <div class="trust-item">🔒 256-bit SSL</div>
         <div class="trust-item">🛡️ Bank-grade security</div>
         <div class="trust-item">✅ 2FA protected</div>
       </div>
 
-    </div><!-- /card -->
-  </div>
+    </div></div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   © 2025 Solvra &nbsp;·&nbsp;
   <a href="#">Privacy</a> &nbsp;·&nbsp;
@@ -591,11 +580,9 @@
   <a href="#">Support</a>
 </footer>
 
-<!-- FORGOT PASSWORD MODAL -->
 <div class="overlay" id="overlay" onclick="outsideClose(event)">
   <div class="modal">
 
-    <!-- Form view -->
     <div id="mForm">
       <div class="modal-top">
         <h3>Reset password</h3>
@@ -613,7 +600,6 @@
       <button class="btn-modal" onclick="sendReset()">Send Reset Link →</button>
     </div>
 
-    <!-- Sent view -->
     <div class="modal-sent" id="mSent">
       <div class="sent-icon">📧</div>
       <h4>Check your inbox!</h4>
@@ -629,6 +615,13 @@
 </div>
 
 <script>
+  /* ══════════════════════════════════════════════════
+     2. INITIALIZE SUPABASE
+  ══════════════════════════════════════════════════ */
+  const supabaseUrl = 'https://catyifsdiesojvcpsldm.supabase.co';
+  const supabaseKey = 'sb_publishable_nbjquhB25jTJ9-dgI-LAcg_fc2k4wzg';
+  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
   /* password toggle */
   let pwShown = false;
   function togglePw() {
@@ -669,8 +662,10 @@
     document.getElementById('alertMsg').textContent  = msg;
   }
 
-  /* sign in */
-  function signIn() {
+  /* ══════════════════════════════════════════════════
+     3. MODIFIED SIGN IN FUNCTION
+  ══════════════════════════════════════════════════ */
+  async function signIn() {
     const email = document.getElementById('email').value.trim();
     const pw    = document.getElementById('password').value;
     clearErr();
@@ -694,25 +689,36 @@
     document.getElementById('spinner').style.display = 'block';
     btn.disabled = true;
 
-    /* simulate API — replace with your real auth call */
-    setTimeout(() => {
+    try {
+      // THE REAL AUTH CALL
+      const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: pw,
+      });
+
+      if (error) throw error;
+
+      // SUCCESS
+      showAlert('success', '✅', 'Signed in successfully! Redirecting…');
+      setTimeout(() => { 
+        // Redirecting to dashboard
+        window.location.href = 'solvra-dashboard.html'; 
+      }, 1500);
+
+    } catch (err) {
+      // ERROR
+      showAlert('error', '⚠️', err.message);
+      document.getElementById('email').classList.add('error');
+      document.getElementById('password').classList.add('error');
+      document.getElementById('password').value = '';
+    } finally {
       document.getElementById('btnTxt').style.display  = 'inline';
       document.getElementById('spinner').style.display = 'none';
       btn.disabled = false;
-
-      if (pw === 'password123') {
-        showAlert('success', '✅', 'Signed in successfully! Redirecting…');
-        setTimeout(() => { window.location.href = 'solvra-homepage.html'; }, 1500);
-      } else {
-        showAlert('error', '⚠️', 'Incorrect email or password. Please try again.');
-        document.getElementById('email').classList.add('error');
-        document.getElementById('password').classList.add('error');
-        document.getElementById('password').value = '';
-      }
-    }, 1600);
+    }
   }
 
-  /* forgot password */
+  /* forgot password logic remains local view only for now */
   function openForgot() {
     document.getElementById('mForm').style.display = 'block';
     document.getElementById('mSent').style.display = 'none';
@@ -729,12 +735,16 @@
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeForgot(); });
 
-  function sendReset() {
+  async function sendReset() {
     const email = document.getElementById('resetEmail').value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       document.getElementById('resetErr').classList.add('show');
       return;
     }
+    
+    // Optional: Real Supabase Password Reset call
+    // await _supabase.auth.resetPasswordForEmail(email)
+
     document.getElementById('resetErr').classList.remove('show');
     document.getElementById('sentEmail').textContent = email;
     document.getElementById('mForm').style.display   = 'none';
