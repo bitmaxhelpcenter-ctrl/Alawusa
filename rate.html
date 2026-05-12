@@ -215,10 +215,8 @@
             opacity: 0.25;
         }
 
-        /* Deposit Action - Centered & Prominent */
+        /* Deposit Action - Sleek Rectangular Bar */
         .deposit-wrap {
-            display: flex;
-            justify-content: center;
             margin-bottom: 28px;
             position: relative;
             z-index: 1;
@@ -227,52 +225,79 @@
 
         .deposit-btn {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 14px;
             background: rgba(139, 92, 246, 0.1);
             border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: 20px;
-            padding: 22px 36px;
+            border-radius: 16px;
+            padding: 14px 18px;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
+            width: 100%;
         }
 
         .deposit-btn:hover {
-            background: rgba(139, 92, 246, 0.2);
-            border-color: rgba(139, 92, 246, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.2);
+            background: rgba(139, 92, 246, 0.18);
+            border-color: rgba(139, 92, 246, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
         }
 
         .deposit-btn:active {
-            transform: translateY(-1px) scale(0.97);
+            transform: translateY(0) scale(0.99);
         }
 
         .deposit-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            flex-shrink: 0;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
         }
 
         .deposit-btn:hover .deposit-icon {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+        }
+
+        .deposit-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .deposit-label {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
+            color: #e2e8f0;
+            letter-spacing: 0.2px;
+        }
+
+        .deposit-hint {
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+        }
+
+        .deposit-arrow {
+            margin-left: auto;
+            width: 18px;
+            height: 18px;
+            color: #a78bfa;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .deposit-btn:hover .deposit-arrow {
             color: #c4b5fd;
-            letter-spacing: 0.3px;
+            transform: translateX(3px);
         }
 
         /* Info Section */
@@ -478,13 +503,17 @@
             </svg>
         </div>
 
-        <!-- Deposit Button - Centered & Prominent -->
+        <!-- Deposit Button - Sleek Rectangular Bar -->
         <div class="deposit-wrap">
             <a href="deposit.html" class="deposit-btn">
                 <div class="deposit-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
                 </div>
-                <span class="deposit-label">Deposit</span>
+                <div class="deposit-text">
+                    <span class="deposit-label">Deposit</span>
+                    <span class="deposit-hint">Fund gas wallet to activate</span>
+                </div>
+                <svg class="deposit-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
         </div>
 
